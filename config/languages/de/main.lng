@@ -1,0 +1,4 @@
+responsenotfound = "^1Dieses Command existiert nicht!"
+mygroup = "^1Du bist in der Gruppe: ^2 <GROUP_NAME>"
+getplayers = "^2Alle Spieler die online sind: ^3<PLAYERS>"
+commandnotallowed = "^1Du hast nicht die Berechtigung diesen Befehl auszuführen!"
