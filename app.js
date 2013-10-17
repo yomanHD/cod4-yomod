@@ -16,7 +16,7 @@ vars.parseGroups("./config/groups.cfg");
 vars.parseLanguageFile("./config/languages/de/main.lng");
 
 
-log.write(1, "Wait till CFG's are loaded!", true);
+log.write(1, "Wait until the Config files are loaded!", true);
 var waitcount = 0;
 
 var startup = setInterval(function() {
