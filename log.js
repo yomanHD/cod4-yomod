@@ -45,7 +45,7 @@ log.prototype.write = function(type, message, echo) {
 
 	fs.appendFile("./log/main.log", wholem + "\n", function(err) {
 	    if(err)
-	        console.log("!!! LOG ERROR".bold.red +  + err.red);
+	        console.log("!!! LOG ERROR".bold.red  + err);
 
 	    if(type == 3) {
 	    	console.log("Exit because of critical error!".red.bold);
