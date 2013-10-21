@@ -24,6 +24,11 @@ plugin.prototype.init = function() {
 		player.say(vars.getLngString("mygroup", ["<GROUP_NAME>"], [vars.getGroupName(player.getGroup())]));
 	});
 
+	handler.registerCommand("kickme", function(data) {
+		var player = players[data.guid];
+		player.kick(data.message.join(" "));
+	});
+
 	handler.registerCommand("say", function(data) {
 		rcon.rcon("say " + data.message.join(" "));
 	});

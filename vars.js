@@ -266,7 +266,7 @@ vars.prototype.parseTextFile = function(file, callback) {
 vars.prototype.getLngString = function(name, search, replace) {
 	if(language[name] == undefined  && language[name] == "") {
 		log.write(3, "MISSING TRANSLATION FOR '" + name + "'", true);
-		return false;
+		return "## ^1MISSING TRANSLATION FOR '^2" + name + "^1' ^7##";
 	}
 
 	var lngString = language[name];
@@ -278,7 +278,7 @@ vars.prototype.getLngString = function(name, search, replace) {
 
 		return lngString;
 	}
-	return false;
+	return "## ^1MISSING TRANSLATION FOR '^2" + name + "^1' ^7##";
 }
 
 vars.prototype.getCV = function(section, key) {

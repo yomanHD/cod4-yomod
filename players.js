@@ -14,11 +14,27 @@ players.prototype.newPlayer = function(guid, pid, name) {
 
 }
 
-players.prototype.playerExists = function(guid) {
-	if(this.players[guid] == undefined)
-		return false;
+players.prototype.getPlayerbyPID = function(pid) {
+	for(key in this.players) {
+		if(this.players[key].pid == pid)
+			return this.players[key];
+	}
 
-	return true;
+	return false;
+}
+
+players.prototype.getPlayerbyName = function(name) {
+	for(key in this.players) {
+		if(this.players[key].name.toLowerCase().indexOf(name.toLowerCase()) != -1) {
+			return this.players[key];
+		}
+	}
+
+	return false;
+}
+
+players.prototype.playerExists = function(guid) {
+	return (this.players[guid] != undefined);
 }
 
 players.prototype.deletePlayer = function(guid) {
@@ -132,6 +148,10 @@ function player(guid, pid, name) {
 		return this.team;
 	}
 
+	this.getPbid = function() {
+		return (parseInt(this.pid) + 1);
+	}
+
 	this.getGroup = function() {
 		return vars.getAdminGroup(this.guid);
 	}
@@ -141,10 +161,21 @@ function player(guid, pid, name) {
 		var group = vars.getGroup(playerGroup);
 		var commands = group["commands"].split(",");
 
+		if(commands[0] == "*")
+			return true;
+
 		if(commands[command] != undefined) {
 			return true;
 		}
 		return false;
+	}
+
+	this.isProtected = function() {
+		var admin = vars.getAdmins()[guid];
+		if(!admin)
+			return false;
+
+		return (admin["protected"] == '1');
 	}
 
 	this.damageTaken = function(type, giver, weapon, damage, bodypart) {
@@ -210,6 +241,76 @@ function player(guid, pid, name) {
 
 	this.say = function(msg) {
 		rcon.rcon("tell " + this.pid + " " + msg);
+	}
+
+	this.kick = function(reason, kicker) {
+		if(!reason) {
+			reason = vars.getCV("kickban", "defaultkickreason");
+		}
+
+		if(!kicker) {
+			kicker = "Server";
+		}
+
+		if(vars.getCV("kickban", "usepb") == "1") {
+			rcon.rcon("pb_sv_kick " + this.getPbid() + " 0 " + reason + "^7", function(result) {
+				if(result.indexOf("Command Issued") != -1) {
+					rcon.rcon("clientkick " + this.pid);
+				}
+			});
+		} else {
+			rcon.rcon("clientkick " + this.pid);
+		}
+
+		rcon.rcon("say " + vars.getLngString("playerKick", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]));
+		log.write(1, vars.getLngString("playerKick", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]), true);
+
+		this.handler.triggerEvent("playerKicked", [guid, reason, kicker]);
+		return true;
+	}
+
+	this.ban = function(reason, kicker) {
+		if(!reason) {
+			reason = vars.getCV("kickban", "defaultbanreason");
+		}
+
+		if(!kicker) {
+			kicker = "Server";
+		}
+
+		if(vars.getCV("kickban", "usepb") == "1") {
+			rcon.rcon("pb_sv_ban " + this.getPbid() + " 0 " + reason + "^7");
+		} else {
+			rcon.rcon("banClient " + this.pid);
+		}
+
+		rcon.rcon("say " + vars.getLngString("playerBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]));
+		log.write(1, vars.getLngString("playerBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]), true);
+
+		this.handler.triggerEvent("playerBanned", [guid, reason, kicker]);
+		return true;
+	}
+
+	this.tempBan = function(reason, kicker, time) {
+		if(!reason) {
+			reason = vars.getCV("kickban", "defaulttempbanreason");
+		}
+
+		if(!kicker) {
+			kicker = "Server";
+		}
+
+		if(vars.getCV("kickban", "usepb") == "1") {
+			rcon.rcon("pb_sv_kick " + this.getPbid() + " " + time + " " + reason + "^7");
+		} else {
+			rcon.rcon("tempBanClient " + this.pid);
+		}
+
+		rcon.rcon("say " + vars.getLngString("playerTempBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>", "<TIME>"], [this.name, this.guid, reason, kicker, time]));
+		log.write(1, vars.getLngString("playerTempBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>", "<TIME>"], [this.name, this.guid, reason, kicker, time]), true);
+
+		this.handler.triggerEvent("playerTempbanBanned", [guid, reason, kicker, time]);
+		return true;
 	}
 }
 

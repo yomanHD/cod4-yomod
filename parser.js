@@ -1,59 +1,45 @@
 var fs = require("fs"),
-	chokidar = require('chokidar'),
 	handler = require('./handler');
+
+var lines = -1;
 
 exports.parselog = function(f) {
 
-	var lines = -1;
+	var watcher = setInterval(function() {
+		var data = fs.readFileSync(f);
 
-	fs.readFile(f, function(err, data) {
-		var openlines = data.toString().split("\n");
+		var currline = -1;
 
-		openlines.forEach(function(line) {
-			lines++;
-		});
-	});
+		var datalines = data.toString().split("\n");
 
-	var watcher = chokidar.watch(f, {ignored: /^\./, persistent: true});
+		for(key in datalines) {
+			currline++;
+		}
 
-	watcher.on('change', function(path, stats) {
-		fs.readFile(path, function(err, data) {
-			if(err)
-				console.log(err);
+		if(lines == -1)
+			lines = currline;
 
-			var currline = -1;
+		for(var i = lines;i<=currline;i++) {
+			//currline = lines;
+			//var dotrigger = true;
 
-			var datalines = data.toString().split("\n");
+			var line = datalines[i];
 
-			datalines.forEach(function() {
-				currline++;
-			});
+			var parts = datalines[i].split(/;|\\|;/);
+			
+			parts[0] = parts[0].trim().split(" ")[1];
 
-			if(currline > lines) {
-				for(var i = lines;i<=currline;i++) {
-					//currline = lines;
-					//var dotrigger = true;
+			if(line == "" || parts[0] == "------------------------------------------------------------")
+				continue;
 
-					var line = datalines[i];
+			parts[0] = getAction(parts[0]);
+			handler.triggerEvent(parts[0], parts);
 
-					var parts = datalines[i].split(/;|\\|;/);
-					
-					parts[0] = parts[0].trim().split(" ")[1];
+		}
 
-					if(line == "" || parts[0] == "------------------------------------------------------------")
-						continue;
+		lines = currline;
 
-					parts[0] = getAction(parts[0]);
-					handler.triggerEvent(parts[0], parts);
-
-				}
-				lines = currline;
-			} else {
-				currline = -1;
-				console.log("file is smaller than before...", currline, lines);
-			}	
-		});
-	});
+	}, 50);
 
 }
 
