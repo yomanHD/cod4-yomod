@@ -1,3 +1,6 @@
+
+//Start this file with node.js
+
 var parser = require('./parser');
 var handler = require('./handler');
 var rcon = require('./rcon');
