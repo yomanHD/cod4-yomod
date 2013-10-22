@@ -1,5 +1,5 @@
 
-//Start this file with node.js
+//Start this file with node.js COMMAND: "node app.js"
 
 var parser = require('./parser');
 var handler = require('./handler');
@@ -13,24 +13,7 @@ log.write(0, '!!!!! Starting YOMOD !!!!!', true);
 
 log.write(0, 'yo-mod v0.1  Copyright (C) 2013  Joel Cremer This program comes with ABSOLUTELY NO WARRANTY.  This is free software, and you are welcome to redistribute it under certain conditions. Visit http://yo-mod.de if you have any trouble', true);
 
-vars.parseConfig("./config/config.cfg");
-vars.parseAdmins("./config/admins.cfg");
-vars.parseGroups("./config/groups.cfg");
-vars.parseLanguageFile("./config/languages/de/main.lng");
-
-
-log.write(1, "Wait until the Config files are loaded!", true);
-var waitcount = 0;
-
-var startup = setInterval(function() {
-	waitcount++;
-		if(waitcount == 5)
-			start();
-}, 100);
-
-function start() {
-
-	clearInterval(startup);
+handler.loadConfigs(function() {
 
 	rcon.setup(vars.getCV("rcon", "host"), vars.getCV("rcon", "port"), vars.getCV("rcon", "password"));
 	
@@ -46,9 +29,9 @@ function start() {
 	
 	players.syncPlayerlist();
 
-	log.write(0, "STARTING PARSER!", true);
+	log.write(0, "^1STARTING PARSER!", true);
 
-	parser.parselog("/home/cod4/srv01/server/codiv/callofduty4/mods/promod_joey/games_mp.log");
+	parser.parselog("/home/cod4/srv01/server/codiv/callofduty4/mods/promod_joey/games_mp.log", vars.getCV("parser", "interval"));
 
 	log.write(0, "PARSER SUCCESSFULLY STARTED!", true);
 
@@ -56,4 +39,4 @@ function start() {
 
 	handler.loadPlugins();
 
-}
+});

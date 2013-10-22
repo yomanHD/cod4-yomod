@@ -262,8 +262,8 @@ function player(guid, pid, name) {
 			rcon.rcon("clientkick " + this.pid);
 		}
 
-		rcon.rcon("say " + vars.getLngString("playerKick", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]));
-		log.write(1, vars.getLngString("playerKick", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]), true);
+		rcon.rcon("say " + vars.getLngString("playerKick", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker.name]));
+		log.write(1, vars.getLngString("playerKick", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker.name]), true);
 
 		this.handler.triggerEvent("playerKicked", [guid, reason, kicker]);
 		return true;
@@ -284,8 +284,8 @@ function player(guid, pid, name) {
 			rcon.rcon("banClient " + this.pid);
 		}
 
-		rcon.rcon("say " + vars.getLngString("playerBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]));
-		log.write(1, vars.getLngString("playerBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker]), true);
+		rcon.rcon("say " + vars.getLngString("playerBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker.name]));
+		log.write(1, vars.getLngString("playerBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>"], [this.name, this.guid, reason, kicker.name]), true);
 
 		this.handler.triggerEvent("playerBanned", [guid, reason, kicker]);
 		return true;
@@ -306,8 +306,8 @@ function player(guid, pid, name) {
 			rcon.rcon("tempBanClient " + this.pid);
 		}
 
-		rcon.rcon("say " + vars.getLngString("playerTempBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>", "<TIME>"], [this.name, this.guid, reason, kicker, time]));
-		log.write(1, vars.getLngString("playerTempBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>", "<TIME>"], [this.name, this.guid, reason, kicker, time]), true);
+		rcon.rcon("say " + vars.getLngString("playerTempBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>", "<TIME>"], [this.name, this.guid, reason, kicker.name, time]));
+		log.write(1, vars.getLngString("playerTempBan", ["<NAME>", "<GUID>", "<REASON>", "<KICKER>", "<TIME>"], [this.name, this.guid, reason, kicker.name, time]), true);
 
 		this.handler.triggerEvent("playerTempbanBanned", [guid, reason, kicker, time]);
 		return true;

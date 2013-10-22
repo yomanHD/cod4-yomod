@@ -29,6 +29,10 @@ plugin.prototype.init = function() {
 		player.kick(data.message.join(" "));
 	});
 
+	handler.registerCommand("saveconfig", function(data) {
+		vars.saveConfig();
+	});
+
 	handler.registerCommand("say", function(data) {
 		rcon.rcon("say " + data.message.join(" "));
 	});

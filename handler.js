@@ -1,6 +1,7 @@
 var plugins = require('./plugins');
 var log = require('./log');
-var players = require('./players').players;
+var players = require('./players');
+var playerlist = players.players;
 var vars = require('./vars');
 var rcon = require('./rcon');
 
@@ -84,6 +85,58 @@ handler.prototype.triggerEvent = function(action, args) {
 	return false;
 }
 
+handler.prototype.actionNormal = function(line) {
+	this.triggerEvent(line[0], line);
+}
+
+handler.prototype.actionNextmap = function(line) {
+	var dvars = new Array();
+	var i = 0;
+
+	for(i = 1; i < line.length; i += 2) {
+		dvars[line[i]] = line[i + 1];
+	}
+
+	if(vars.getDvar("_yomod") == false)  {
+		log.write(2, "Detected Server restart!", true);
+		players.resetEverything();
+		this.triggerEvent("ServerRestart");
+	}
+
+	if(vars.getDvar("mapname") != dvars["mapname"]) {
+		log.write(2, "Detected Map change!", true);
+		this.triggerEvent("mapchange");
+	}
+
+	vars.setDvars(dvars);
+	this.triggerEvent("nextmap");
+}
+
+handler.prototype.actionJoin = function(line) {
+	var guid = line[1];
+	if(!players.playerExists(guid)) {
+		this.triggerEvent("playerjoin", line);
+	} else {
+		playerlist[guid].update({
+			name: line[3],
+			pid: line[2]
+		});
+	}
+}
+
+handler.prototype.actionSay = function(line) {
+	var message = line[4];
+	var guid = line[1];
+
+	if(message.charAt(0) == "!") {
+		message = message.split(" ");
+		message[0] = message[0].replace("!", "");
+		this.executeCommand(guid, message);
+	}
+
+	this.triggerEvent(line[0], line);
+}
+
 handler.prototype.executeCommand = function(guid, command) {
 
 	var c = command[0].toLowerCase();
@@ -93,12 +146,12 @@ handler.prototype.executeCommand = function(guid, command) {
 	}
 
 	if(this.commands[c] == undefined) {
-		players[guid].say(vars.getLngString("responsenotfound"));
+		playerlist[guid].say(vars.getLngString("responsenotfound"));
 		return false;
 	}
 
-	if(!players[guid].isAllowed(guid, c)) {
-		players[guid].say(vars.getLngString("commandnotallowed"));
+	if(!playerlist[guid].isAllowed(guid, c)) {
+		playerlist[guid].say(vars.getLngString("commandnotallowed"));
 		return false;
 	}
 
@@ -106,7 +159,7 @@ handler.prototype.executeCommand = function(guid, command) {
 		log.write(1, "This command has no valid function!", true);
 
 		if(vars.getCV("commands", "responsenotfound") == '1') {
-			players[guid].say(vars.getLngString("responsenotfound"));
+			playerlist[guid].say(vars.getLngString("responsenotfound"));
 		}
 
 		return false;
@@ -119,24 +172,29 @@ handler.prototype.executeCommand = function(guid, command) {
 	
 }
 
-handler.prototype.loadPlugins = function() {
-	plugins.init();
-	defaultevents();
-} 
+handler.prototype.loadConfigs = function(callback) {
 
-function defaultevents() {
-	handler.registerEvent("say", function(args) {
-		var message = args[4];
-		var guid = args[1];
-		if(message.charAt(0) == "!") {
+	vars.parseConfig("./config/config.cfg");
+	vars.parseAdmins("./config/admins.cfg");
+	vars.parseGroups("./config/groups.cfg");
+	vars.parseLanguageFile("./config/languages/de/main.lng");
 
-			message = message.split(" ");
-			message[0] = message[0].replace("!", "");
-			handler.executeCommand(guid, message);
-		}
-	});
+	var startInterval = setInterval(function() {
+		clearInterval(startInterval);
+		callback();
+	}, 500);
 }
 
+handler.prototype.reloadConfigs = function() {
+	vars.parseConfig("./config/config.cfg");
+	vars.parseAdmins("./config/admins.cfg");
+	vars.parseGroups("./config/groups.cfg");
+	vars.parseLanguageFile("./config/languages/de/main.lng");
+}
+
+handler.prototype.loadPlugins = function() {
+	plugins.init();
+}
 var handler = new handler;
 
 module.exports = handler;

@@ -211,6 +211,84 @@ vars.prototype.parseGroups = function(file) {
 	
 }
 
+vars.prototype.saveConfig = function() {
+
+	var configtext = "";
+
+	for(key in configs) {
+
+		configtext += "[" + key + "]\n";
+
+		for(k in configs[key]) {
+
+			configtext += k + " = " + configs[key][k] + "\n";
+
+		}
+
+		configtext += "\n";
+	}
+
+	fs.writeFile('./config/config.cfg', configtext, function (err,data) {
+		if(err)
+			log.write(2, "Error: Saving Configfile './config/config.cfg' failed!", true);
+
+		log.write(1, "Success: Saving Configfile './config/config.cfg' succeed!", true);
+
+	});
+}
+
+vars.prototype.saveAdmins = function() {
+
+	var adminstext = "";
+
+	for(key in admins) {
+
+		adminstext += "[" + key + "]\n";
+
+		for(k in admins[key]) {
+
+			adminstext += k + " = " + admins[key][k] + "\n";
+
+		}
+
+		adminstext += "\n";
+	}
+
+	fs.writeFile('./config/admins.cfg', adminstext, function (err,data) {
+		if(err)
+			log.write(2, "Error: Saving Configfile './config/admins.cfg' failed!", true);
+
+		log.write(1, "Success: Saving Configfile './config/admins.cfg' succeed!", true);
+
+	});
+}
+
+vars.prototype.saveGroups = function() {
+
+	var groupstext = "";
+
+	for(key in groups) {
+
+		groupstext += "[" + key + "]\n";
+
+		for(k in groups[key]) {
+
+			groupstext += k + " = " + groups[key][k] + "\n";
+
+		}
+
+		groupstext += "\n";
+	}
+
+	fs.writeFile('./config/groups.cfg', groupstext, function (err,data) {
+		if(err)
+			log.write(2, "Error: Saving Configfile './config/groups.cfg' failed!", true);
+
+		log.write(1, "Success: Saving Configfile './config/groups.cfg' succeed!", true);
+
+	});
+}
+
 vars.prototype.parseLanguageFile = function(file) {
 	fs.readFile(file, function(err, data) {
 		if(err) {

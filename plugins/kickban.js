@@ -11,7 +11,11 @@ plugin.prototype.init = function() {
 	var playerlist = players.players;
 
 	handler.registerCommand("kick", function(data) {
+		if(data.message[0] == undefined)
+			return false;
+
 		var player = players.getPlayerbyName(data.message[0]);
+		var kicker = playerlist[data.guid];
 
 		if(player == undefined || !player) {
 			player = players.getPlayerbyPID(data.message[0]);
@@ -19,10 +23,9 @@ plugin.prototype.init = function() {
 
 		if(player == undefined || !player) {
 			log.write(1, "Player not found!", true);
+			playerlist[kicker.guid].say(vars.getLngString("playerNotFound", ["<SEARCH>"], [data.message[0]]));
 			return false;
 		}
-
-		var kicker = playerlist[data.guid].name;
 
 		data.message.shift();
 		var reason = data.message.join(" ");
@@ -35,7 +38,11 @@ plugin.prototype.init = function() {
 	});
 
 	handler.registerCommand("ban", function(data) {
+		if(data.message[0] == undefined)
+			return false;
+
 		var player = players.getPlayerbyName(data.message[0]);
+		var kicker = playerlist[data.guid];
 
 		if(player == undefined || !player) {
 			player = players.getPlayerbyPID(data.message[0]);
@@ -43,10 +50,11 @@ plugin.prototype.init = function() {
 
 		if(player == undefined || !player) {
 			log.write(1, "Player not found!", true);
+			playerlist[kicker.guid].say(vars.getLngString("playerNotFound", ["<SEARCH>"], [data.message[0]]));
 			return false;
 		}
 
-		var kicker = playerlist[data.guid].name;
+		
 
 		data.message.shift();
 		var reason = data.message.join(" ");
@@ -59,7 +67,11 @@ plugin.prototype.init = function() {
 	});
 
 	handler.registerCommand("tempban", function(data) {
+		if(data.message[0] == undefined)
+			return false;
+
 		var player = players.getPlayerbyName(data.message[0]);
+		var kicker = playerlist[data.guid];
 
 		if(player == undefined || !player) {
 			player = players.getPlayerbyPID(data.message[0]);
@@ -67,10 +79,10 @@ plugin.prototype.init = function() {
 
 		if(player == undefined || !player) {
 			log.write(1, "Player not found!", true);
+			playerlist[kicker.guid].say(vars.getLngString("playerNotFound", ["<SEARCH>"], [data.message[0]]));
 			return false;
 		}
 
-		var kicker = playerlist[data.guid].name;
 		var time = data.message[1];
 		if(typeof parseInt(time) == "number") {
 			console.log("NUMVER");

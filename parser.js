@@ -3,7 +3,7 @@ var fs = require("fs"),
 
 var lines = -1;
 
-exports.parselog = function(f) {
+exports.parselog = function(f, interval) {
 
 	var watcher = setInterval(function() {
 		var data = fs.readFileSync(f);
@@ -33,13 +33,32 @@ exports.parselog = function(f) {
 				continue;
 
 			parts[0] = getAction(parts[0]);
-			handler.triggerEvent(parts[0], parts);
-
+			//handler.triggerEvent(parts[0], parts);
+			switch(parts[0]) {
+				case "say":
+				case "sayteam":
+					handler.actionSay(parts);
+					break;
+				case "damage":
+				case "kill":
+				case "playerquit":
+				case "jointeam":
+				case "mapend":
+				case "exitmap":
+					handler.actionNormal(parts);
+					break;
+				case "nextmap":
+					handler.actionNextmap(parts);
+					break;
+				case "playerjoin":
+					handler.actionJoin(parts);
+					break;
+			}
 		}
 
 		lines = currline;
 
-	}, 50);
+	}, 100 || interval);
 
 }
 

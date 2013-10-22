@@ -5,3 +5,4 @@ commandnotallowed = "^1Du hast nicht die Berechtigung diesen Befehl auszuführen
 playerKick = "Player ^1<NAME>^7 got kicked by <KICKER>, Reason: ^1<REASON>"
 playerBan = "Player ^1<NAME>^7 got banned by <KICKER>, Reason: ^1<REASON>"
 playerTempBan = "Player ^1<NAME>^7 got banned for ^1<TIME>^7min by ^1<KICKER>^7, Reason: ^1<REASON>"
+playerNotFound = "Player with name or PID ^1<SEARCH>^7 not found^1!^7"

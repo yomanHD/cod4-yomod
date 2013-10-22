@@ -10,7 +10,9 @@ function plugin() {}
 
 plugin.prototype.init = function() {
 
-	votes["mapvote"] = new vote({
+	var currVote = undefined;
+
+	votes["map"] = new vote({
 		name: "mapvote",
 		duration: 30,
 		maxVotes: 1,
@@ -20,20 +22,13 @@ plugin.prototype.init = function() {
 	});
 
 	handler.registerCommand("vote", function(data) {
-		console.log(data);
+		var type = data.message[0];
+		if(currVote == undefined) {
+			currVote = votes[type];
+			currVote.start(data.guid, data.message);
+		}
 	});
 
-}
-
-function votes() {
-	this.currentVote = undefined;
-	this.votes = [];
-
-	this.startVote = function(name) {
-		if(currentVote != undefined) {
-
-		}
-	}
 }
 
 function vote(settings) {
@@ -72,7 +67,7 @@ function vote(settings) {
 		log.write(1, "Vote: " + this.settings.name + " was started!", true);
 
 		this.settings.onStart(guid, args);
-		this.announceTimer = setInterval(announce, (this.settings.duration - 7) / 2);
+		this.announceTimer = setInterval(this.settings.announce, (this.settings.duration - 7) / 2);
 	}
 
 	this.cancel = function(guid) {

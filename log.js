@@ -38,6 +38,8 @@ log.prototype.write = function(type, message, echo) {
 			break;
 	}
 
+	message = message.replace(/\^./, "");
+
 	if(echo)
 		console.log(prefix, message, suffix);
 
